@@ -7,9 +7,9 @@ reloadable=true
 
 [entry]
 
-OSX.64="res://native/libbouncy.dylib"
-Windows.64="res://native/bouncy.dll"
-X11.64="res://native/libbouncy.so"
+OSX.64="res://gdnative/bouncy/libbouncy.dylib"
+Windows.64="res://gdnative/bouncy/bouncy.dll"
+X11.64="res://gdnative/bouncy/libbouncy.so"
 
 [dependencies]
 
