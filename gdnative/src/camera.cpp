@@ -82,11 +82,10 @@ int Camera::getHeight() {
 
 }
 
-int Camera::flip(bool flip_lr, bool flip_ud) {
+void Camera::flip(bool flip_lr, bool flip_ud) {
 
     this->flip_lr = flip_lr;
     this->flip_ud = flip_ud;
-
 }
 
 void Camera::loop() {

@@ -46,7 +46,7 @@ public:
     int getWidth();
     int getHeight();
 
-    int flip(bool flip_lr = true, bool flip_ud = false);
+    void flip(bool flip_lr = true, bool flip_ud = false);
 
 private:
 

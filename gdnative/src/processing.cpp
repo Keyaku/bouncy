@@ -5,6 +5,7 @@
 #include <opencv2/video/video.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "bouncy.h"
 #include "camera.h"
 #include "processing.h"
 
@@ -21,10 +22,10 @@ static Mat previous;
 
 int processing_initialize() {
 
-    printf("Loading resources \n");
+    b_print("Loading resources\n");
 
     if (!cascade.load("./face_cascade.xml")) {
-        printf("Cannot load cascade \n");
+        b_fprint(stderr, "Cannot load cascade\n");
     }
 
     return 1;
@@ -52,7 +53,7 @@ region processing_detect_face(void *obj) {
             1.1, 3, CASCADE_FIND_BIGGEST_OBJECT | CASCADE_DO_ROUGH_SEARCH | CASCADE_SCALE_IMAGE,
             Size(40, 40), Size(100, 100) );
 
-        //printf("Faces %d %d \n", faces.size(), working2.cols);
+        //b_print("Faces %d %d \n", faces.size(), working2.cols);
 
         if (faces.size() > 0) {
             r.x = faces[0].x * scale_factor;

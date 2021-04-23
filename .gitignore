@@ -17,6 +17,7 @@ data_*/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
+gdnative/src/Makefile
 *.zip
 
 # OS files

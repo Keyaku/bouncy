@@ -32,10 +32,10 @@ void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options *p_options) {
 	// now find our extensions
 	for (int i = 0; i < api->num_extensions; i++) {
 		switch (api->extensions[i]->type) {
-			case GDNATIVE_EXT_NATIVESCRIPT: {
-				nativescript_api = (godot_gdnative_ext_nativescript_api_struct *)api->extensions[i];
-			}; break;
-			default: break;
+		case GDNATIVE_EXT_NATIVESCRIPT:
+			nativescript_api = (godot_gdnative_ext_nativescript_api_struct *)api->extensions[i];
+		break;
+		default: break;
 		};
 	};
 }

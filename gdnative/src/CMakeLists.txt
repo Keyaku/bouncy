@@ -15,4 +15,3 @@ IF(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/godot_headers-master")
 endif()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/godot_headers-master)
-

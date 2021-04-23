@@ -1,10 +1,9 @@
 extends Sprite
 
 var texture_size
-var image = Image.new()
 
-func _on_root_camera_frame(image):
-	texture.set_data(image);
+func _on_root_camera_frame(img):
+	texture.set_data(img);
 
 func _on_root_camera_ready(size):
 	texture_size = max(size.x, size.y);

@@ -17,7 +17,7 @@ func _integrate_forces(state):
 
 func _on_root_game_start(position):
 	reposition = position
-	
+
 func _on_root_force(force):
 	apply_impulse(Vector2(), force)
 	eye.set("position", (1 - damping) * eye.get("position") + damping * force.normalized() * 3)
