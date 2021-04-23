@@ -18,7 +18,7 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 gdnative/src/Makefile
-*.zip
+godot-headers*
 
 # OS files
 *.DS_Store
