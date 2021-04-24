@@ -52,7 +52,7 @@ region processing_detect_face(void *obj) {
 			Size(40, 40), Size(100, 100)
 		);
 
-		// b_print("Faces %lu %d \n", faces.size(), working2.cols);
+		// b_println("Faces %lu %d", faces.size(), working2.cols);
 
 		if (faces.size() > 0) {
 			r.x = faces[0].x * scale_factor;

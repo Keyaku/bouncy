@@ -38,6 +38,7 @@ func _process(_delta):
 
 	if not active:
 		var face = camera.detect_face()
+		$face_detection.exists = face is Rect2 or face is bool and face == true
 		if face and not active:
 			var position = face.position + face.size / 2;
 			if (position - size / 2).length() < 40:

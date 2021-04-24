@@ -103,10 +103,9 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "compute_flow", attributes, compute_flow);
 
-	b_print("Loading resources\n");
-
 	processing_initialize();
 
+	b_println("GodotCV NativeScript initialized");
 }
 
 GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method_data) {
@@ -117,7 +116,7 @@ GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method
 	api->godot_pool_byte_array_new(&user_data->buffer);
 	user_data->counter = 0;
 
-	b_fprint(stderr, "Loading resources \n");
+	b_println("Loading camera resources");
 
 	return user_data;
 
@@ -186,7 +185,7 @@ godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *
 	ms = (width < height) ? height : width;
 	api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
 
-	b_print("Opened camera \n");
+	b_println("Opened camera");
 
 	api->godot_variant_new_bool(&res, 1);
 	return res;
@@ -265,7 +264,6 @@ godot_variant _camera_detect_face(godot_object *p_instance, void *p_method_data,
 
 	if (r.x < 0) {
 		api->godot_variant_new_bool(&res, GODOT_FALSE);
-		b_fprint(stderr, "Problem with region");
 		return res;
 	}
 
