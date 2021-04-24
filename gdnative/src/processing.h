@@ -9,11 +9,11 @@ extern "C" {
 #include <stdint.h>
 
 typedef struct region {
-    int x; int y; int w; int h;
+	int x; int y; int w; int h;
 } region;
 
 typedef struct flow {
-    int x; int y;
+	int x; int y;
 } flow;
 
 int processing_initialize();

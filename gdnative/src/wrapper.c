@@ -9,8 +9,8 @@
 
 typedef struct camera_data_struct {
 	void* camera;
-    godot_pool_byte_array buffer;
-    unsigned long counter;
+	godot_pool_byte_array buffer;
+	unsigned long counter;
 } camera_data_struct;
 
 const godot_gdnative_core_api_struct *api = NULL;
@@ -45,7 +45,7 @@ godot_arvr_interface_gdnative ar_interface;
 
 void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_options *p_options) {
 
-    camera_delete_all();
+	camera_delete_all();
 
 	api = NULL;
 	nativescript_api = NULL;
@@ -83,12 +83,12 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "get_height", attributes, get_height);
 
-    godot_instance_method set_default = { NULL, NULL, NULL };
+	godot_instance_method set_default = { NULL, NULL, NULL };
 	set_default.method = &_camera_set_default;
 
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "set_default", attributes, set_default);
 
-    godot_instance_method flip = { NULL, NULL, NULL };
+	godot_instance_method flip = { NULL, NULL, NULL };
 	flip.method = &_camera_flip;
 
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "flip", attributes, flip);
@@ -105,152 +105,152 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 
 	b_print("Loading resources\n");
 
-    processing_initialize();
+	processing_initialize();
 
 }
 
 GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method_data) {
 
-    camera_data_struct *user_data = api->godot_alloc(sizeof(camera_data_struct));
+	camera_data_struct *user_data = api->godot_alloc(sizeof(camera_data_struct));
 
 	user_data->camera = NULL;
-    api->godot_pool_byte_array_new(&user_data->buffer);
-    user_data->counter = 0;
+	api->godot_pool_byte_array_new(&user_data->buffer);
+	user_data->counter = 0;
 
 	b_fprint(stderr, "Loading resources \n");
 
-    return user_data;
+	return user_data;
 
 }
 
 GDCALLINGCONV void _camera_destructor(godot_object *p_instance, void *p_method_data, void *p_user_data) {
 
-    camera_data_struct *user_data = (camera_data_struct*) p_user_data;
+	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
-    if (user_data->camera) {
-        camera_delete(user_data->camera);
-        user_data->camera = NULL;
-    }
+	if (user_data->camera) {
+		camera_delete(user_data->camera);
+		user_data->camera = NULL;
+	}
 
-    api->godot_pool_byte_array_destroy(&user_data->buffer);
-    api->godot_free(p_user_data);
+	api->godot_pool_byte_array_destroy(&user_data->buffer);
+	api->godot_free(p_user_data);
 }
 
 godot_variant _camera_set_default(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    int camera_id = 0, success;
-    int width, height, ms;
-    godot_variant res;
+	int camera_id = 0, success;
+	int width, height, ms;
+	godot_variant res;
 
-    if (p_num_args > 0) {
-        camera_id = api->godot_variant_as_int(p_args[0]);
-    }
+	if (p_num_args > 0) {
+		camera_id = api->godot_variant_as_int(p_args[0]);
+	}
 
-    camera_set_default(camera_id);
+	camera_set_default(camera_id);
 
-    api->godot_variant_new_bool(&res, 1);
+	api->godot_variant_new_bool(&res, 1);
 	return res;
 }
 
 godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    int camera_id = -1, success;
-    int width, height, ms;
-    godot_variant res;
+	int camera_id = -1, success;
+	int width, height, ms;
+	godot_variant res;
 
-    camera_data_struct *user_data = (camera_data_struct*) p_user_data;
+	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
-    if (p_num_args > 0) {
-        camera_id = api->godot_variant_as_int(p_args[0]);
-    }
+	if (p_num_args > 0) {
+		camera_id = api->godot_variant_as_int(p_args[0]);
+	}
 
-    if (!user_data) {
-        api->godot_variant_new_bool(&res, GODOT_FALSE);
-	    return res;
-    }
+	if (!user_data) {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+		return res;
+	}
 
-    if (user_data->camera) {
-        camera_delete(user_data->camera);
-    }
+	if (user_data->camera) {
+		camera_delete(user_data->camera);
+	}
 
-    user_data->camera = camera_create(camera_id);
+	user_data->camera = camera_create(camera_id);
 
-    if (!user_data->camera) {
-        api->godot_variant_new_bool(&res, GODOT_FALSE);
-	    return res;
-    }
+	if (!user_data->camera) {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+		return res;
+	}
 
-    width = camera_get_width(user_data->camera);
-    height = camera_get_height(user_data->camera);
+	width = camera_get_width(user_data->camera);
+	height = camera_get_height(user_data->camera);
 
-    ms = (width < height) ? height : width;
-    api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
+	ms = (width < height) ? height : width;
+	api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
 
-    b_print("Opened camera \n");
+	b_print("Opened camera \n");
 
-    api->godot_variant_new_bool(&res, 1);
+	api->godot_variant_new_bool(&res, 1);
 	return res;
 }
 
 godot_variant _camera_get_image(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    int updated = 0;
+	int updated = 0;
 
-    godot_variant res;
+	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
-    godot_pool_byte_array_write_access* writer;
+	godot_pool_byte_array_write_access* writer;
 
-    writer = api->godot_pool_byte_array_write(&user_data->buffer);
-    uint8_t* data = api->godot_pool_byte_array_write_access_ptr(writer);
-    updated = camera_get_image(user_data->camera, data, &user_data->counter);
-    api->godot_pool_byte_array_write_access_destroy(writer);
+	writer = api->godot_pool_byte_array_write(&user_data->buffer);
+	uint8_t* data = api->godot_pool_byte_array_write_access_ptr(writer);
+	updated = camera_get_image(user_data->camera, data, &user_data->counter);
+	api->godot_pool_byte_array_write_access_destroy(writer);
 
 
-    if (updated) {
-        api->godot_variant_new_pool_byte_array(&res, &user_data->buffer);
-    } else {
-        api->godot_variant_new_bool(&res, GODOT_FALSE);
-    }
+	if (updated) {
+		api->godot_variant_new_pool_byte_array(&res, &user_data->buffer);
+	} else {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+	}
 
 	return res;
 }
 
 godot_variant _camera_get_width(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    godot_variant res;
+	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
-    api->godot_variant_new_int(&res, camera_get_width(user_data->camera));
+	api->godot_variant_new_int(&res, camera_get_width(user_data->camera));
 	return res;
 }
 
 godot_variant _camera_get_height(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    godot_variant res;
+	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
-    api->godot_variant_new_int(&res, camera_get_height(user_data->camera));
+	api->godot_variant_new_int(&res, camera_get_height(user_data->camera));
 	return res;
 }
 
 godot_variant _camera_flip(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    godot_variant res;
+	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
-    int flip_lr = 1, flip_ud = 0;
+	int flip_lr = 1, flip_ud = 0;
 
-    if (p_num_args > 0) {
-        flip_lr = api->godot_variant_as_bool(p_args[0]);
-    }
+	if (p_num_args > 0) {
+		flip_lr = api->godot_variant_as_bool(p_args[0]);
+	}
 
-    if (p_num_args > 1) {
-        flip_ud = api->godot_variant_as_bool(p_args[1]);
-    }
+	if (p_num_args > 1) {
+		flip_ud = api->godot_variant_as_bool(p_args[1]);
+	}
 
-    camera_flip(user_data->camera, flip_lr, flip_ud);
+	camera_flip(user_data->camera, flip_lr, flip_ud);
 
-    api->godot_variant_new_bool(&res, GODOT_TRUE);
+	api->godot_variant_new_bool(&res, GODOT_TRUE);
 
 	return res;
 }
@@ -258,51 +258,51 @@ godot_variant _camera_flip(godot_object *p_instance, void *p_method_data, void *
 
 godot_variant _camera_detect_face(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    godot_variant res;
-	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
+	godot_variant res;
+	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
-    region r = processing_detect_face(user_data->camera);
+	region r = processing_detect_face(user_data->camera);
 
-    if (r.x < 0) {
-        api->godot_variant_new_bool(&res, GODOT_FALSE);
-        return res;
-    }
+	if (r.x < 0) {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+		b_fprint(stderr, "Problem with region");
+		return res;
+	}
 
-    godot_rect2 grec;
+	godot_rect2 grec;
+	api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
 
-    api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
-
-    api->godot_variant_new_rect2(&res, &grec);
+	api->godot_variant_new_rect2(&res, &grec);
 
 	return res;
 }
 
 godot_variant _camera_compute_flow(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
 
-    godot_variant res;
+	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
-    if (p_num_args == 0) {
-        api->godot_variant_new_bool(&res, GODOT_FALSE);
-        return res;
-    }
+	if (p_num_args == 0) {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+		return res;
+	}
 
-    godot_rect2 grec = api->godot_variant_as_rect2(p_args[0]);
+	godot_rect2 grec = api->godot_variant_as_rect2(p_args[0]);
 
-    region r;
-    godot_vector2 p = api->godot_rect2_get_position(&grec);
-    godot_vector2 s = api->godot_rect2_get_size(&grec);
-    r.w = api->godot_vector2_get_x(&s);
-    r.h = api->godot_vector2_get_y(&s);
-    r.x = api->godot_vector2_get_x(&p) - r.w / 2;
-    r.y = api->godot_vector2_get_y(&p) - r.h / 2;
+	region r;
+	godot_vector2 p = api->godot_rect2_get_position(&grec);
+	godot_vector2 s = api->godot_rect2_get_size(&grec);
+	r.w = api->godot_vector2_get_x(&s);
+	r.h = api->godot_vector2_get_y(&s);
+	r.x = api->godot_vector2_get_x(&p) - r.w / 2;
+	r.y = api->godot_vector2_get_y(&p) - r.h / 2;
 
-    flow f = processing_calculate_flow(user_data->camera, r);
+	flow f = processing_calculate_flow(user_data->camera, r);
 
-    godot_vector2 gvec;
-    api->godot_vector2_new(&gvec, f.x, f.y);
+	godot_vector2 gvec;
+	api->godot_vector2_new(&gvec, f.x, f.y);
 
-    api->godot_variant_new_vector2(&res, &gvec);
+	api->godot_variant_new_vector2(&res, &gvec);
 
 	return res;
 }

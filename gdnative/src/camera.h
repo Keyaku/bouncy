@@ -37,31 +37,31 @@ using namespace cv;
 class Camera {
 public:
 
-    Camera(int camera);
-    ~Camera();
+	Camera(int camera);
+	~Camera();
 
-    Mat getFrame();
-    Mat getFrameIfNewer(unsigned long& current);
-    unsigned long getFrameNumber();
-    int getWidth();
-    int getHeight();
+	Mat getFrame();
+	Mat getFrameIfNewer(unsigned long& current);
+	unsigned long getFrameNumber();
+	int getWidth();
+	int getHeight();
 
-    void flip(bool flip_lr = true, bool flip_ud = false);
+	void flip(bool flip_lr = true, bool flip_ud = false);
 
 private:
 
-    void loop();
+	void loop();
 
 	VideoCapture capture;
-    Mat frame;
-    int width;
-    int height;
-    unsigned long counter;
-    float fps;
-    bool flip_lr, flip_ud;
+	Mat frame;
+	int width;
+	int height;
+	unsigned long counter;
+	float fps;
+	bool flip_lr, flip_ud;
 
-    std::recursive_mutex guard;
-    std::thread worker;
+	std::recursive_mutex guard;
+	std::thread worker;
 
 };
 
