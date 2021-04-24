@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bouncy.h"
 #include "camera.h"
 #include "processing.h"
 
@@ -102,7 +103,7 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "compute_flow", attributes, compute_flow);
 
-printf("Loading resources \n");
+	b_print("Loading resources\n");
 
     processing_initialize();
 
@@ -116,7 +117,7 @@ GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method
     api->godot_pool_byte_array_new(&user_data->buffer);
     user_data->counter = 0;
 
-fprintf(stderr, "Loading resources \n");
+	b_fprint(stderr, "Loading resources \n");
 
     return user_data;
 
@@ -185,7 +186,7 @@ godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *
     ms = (width < height) ? height : width;
     api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
 
-    printf("Opened camera \n");
+    b_print("Opened camera \n");
 
     api->godot_variant_new_bool(&res, 1);
 	return res;
