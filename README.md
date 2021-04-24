@@ -6,6 +6,14 @@ An example of using OpenCV in your Godot game through GDNative API. It works wit
 Setup
 -----
 
-You must have OpenCV installed and discoverable. Then, compile the native code in the `native` directory, this will produce library `bouncy`, which you have to copy to the `native` folder and, if needed, fix the path to it in `bouncy.gdnlib` file. Then you can open the project in Godot.
+You must have OpenCV installed and discoverable.  
+For macOS, you can use Brew (beware of the many dependencies!):  
+`brew install opencv`
+
+Then, compile the native code in the `gdnative/src` directory:  
+`cd gdnative/src && cmake . && make`
+
+This will produce library `bouncy` and will automatically put it in `gdnative/bouncy`.  
+The `gdnlib` file is ready for this setup for Windows, macOS and Linux 64-bit libraries. If you need more, you can edit the file `gdnative/bouncy/bouncy.gdnlib` with your editor of preference, or with Godot directly.
 
 
