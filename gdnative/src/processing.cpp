@@ -15,6 +15,7 @@ using namespace cv;
 #define MAX_COUNT 500
 
 static CascadeClassifier cascade;
+static const char* CascadeDir = "gdnative/bouncy/face_cascade.xml";
 
 static Mat camera, working1, working2;
 
@@ -22,10 +23,8 @@ static Mat previous;
 
 int processing_initialize() {
 
-	b_print("Loading resources\n");
-
-	if (!cascade.load("./face_cascade.xml")) {
-		b_fprint(stderr, "Cannot load cascade\n");
+	if (!cascade.load(CascadeDir)) {
+		b_fprintln(stderr, "Cannot load %s", CascadeDir);
 	}
 
 	return 1;
