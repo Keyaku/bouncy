@@ -279,7 +279,7 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle)
 
 	godot_property_get_func get_width = { .get_func = &_camera_get_width, NULL, NULL };
 	godot_property_set_func set_width = { .set_func = &_camera_do_nothing, NULL, NULL };
-	nativescript_api->godot_nativescript_register_property(p_handle, "Camera", "height", &prop_attr, set_width, get_width);
+	nativescript_api->godot_nativescript_register_property(p_handle, "Camera", "width", &prop_attr, set_width, get_width);
 
 	godot_property_get_func get_height = { .get_func = &_camera_get_height, NULL, NULL };
 	godot_property_set_func set_height = { .set_func = &_camera_do_nothing, NULL, NULL };
