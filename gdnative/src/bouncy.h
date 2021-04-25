@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+
+/* Library-specific printing */
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define b_fprint(pipe, fmt, ...) \
@@ -12,5 +14,8 @@
 
 #define b_print(fmt, ...) b_fprint(stdout, fmt, ##__VA_ARGS__)
 #define b_println(fmt, ...) b_fprintln(stdout, fmt, ##__VA_ARGS__)
+
+/* General helpers */
+#define array_len(ARR) (sizeof ARR / sizeof ARR[0])
 
 #endif
