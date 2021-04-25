@@ -71,4 +71,4 @@ SharedCamera camera_open(int id = -1);
 #endif
 
 
-#endif
+#endif // CAMERA_API_H

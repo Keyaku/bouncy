@@ -6,7 +6,6 @@ onready var camera = preload("res://scripts/native/camera.gdns").new()
 
 var active: bool = false
 var player
-var camera_size
 var texture_size
 var image = Image.new();
 

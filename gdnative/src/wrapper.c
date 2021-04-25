@@ -10,6 +10,7 @@
 typedef struct camera_data_struct {
 	void* camera;
 	godot_pool_byte_array buffer;
+	godot_vector2 size;
 	unsigned long counter;
 } camera_data_struct;
 
@@ -17,7 +18,8 @@ const godot_gdnative_core_api_struct *api = NULL;
 const godot_gdnative_ext_nativescript_api_struct *nativescript_api = NULL;
 
 
-void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options *p_options) {
+void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options *p_options)
+{
 	api = p_options->api_struct;
 
 	// now find our extensions
@@ -33,16 +35,16 @@ void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options *p_options) {
 
 godot_arvr_interface_gdnative ar_interface;
 
-void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_options *p_options) {
-
+void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_options *p_options)
+{
 	camera_delete_all();
 
 	api = NULL;
 	nativescript_api = NULL;
 }
 
-GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method_data) {
-
+GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method_data)
+{
 	camera_data_struct *user_data = api->godot_alloc(sizeof(camera_data_struct));
 
 	user_data->camera = NULL;
@@ -55,8 +57,8 @@ GDCALLINGCONV void *_camera_constructor(godot_object *p_instance, void *p_method
 
 }
 
-GDCALLINGCONV void _camera_destructor(godot_object *p_instance, void *p_method_data, void *p_user_data) {
-
+GDCALLINGCONV void _camera_destructor(godot_object *p_instance, void *p_method_data, void *p_user_data)
+{
 	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
 	if (user_data->camera) {
@@ -74,8 +76,8 @@ void _camera_do_nothing(godot_object *p_instance, void *p_method_data, void *p_u
 	// Do nothing
 }
 
-godot_variant _camera_set_default(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_set_default(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args)
+{
 	int camera_id = 0, success;
 	int width, height, ms;
 	godot_variant res;
@@ -90,8 +92,12 @@ godot_variant _camera_set_default(godot_object *p_instance, void *p_method_data,
 	return res;
 }
 
-godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_open(
+	godot_object *p_instance,
+	void *p_method_data,
+	void *p_user_data,
+	int p_num_args, godot_variant **p_args
+) {
 	int camera_id = -1, success;
 	int width, height, ms;
 	godot_variant res;
@@ -118,8 +124,9 @@ godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *
 		return res;
 	}
 
-	width = camera_get_width(user_data->camera);
+	width  = camera_get_width(user_data->camera);
 	height = camera_get_height(user_data->camera);
+	api->godot_vector2_new(&user_data->size, width, height);
 
 	ms = (width < height) ? height : width;
 	api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
@@ -130,8 +137,8 @@ godot_variant _camera_open(godot_object *p_instance, void *p_method_data, void *
 	return res;
 }
 
-godot_variant _camera_get_image(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_get_image(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args)
+{
 	int updated = 0;
 
 	godot_variant res;
@@ -175,15 +182,13 @@ godot_variant _camera_get_size(godot_object *p_instance, void *p_method_data, vo
 {
 	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
-	godot_vector2 camera_size;
 
-	api->godot_vector2_new(&camera_size, camera_get_width(user_data->camera), camera_get_height(user_data->camera));
-	api->godot_variant_new_vector2(&res, &camera_size);
+	api->godot_variant_new_vector2(&res, &user_data->size);
 	return res;
 }
 
-godot_variant _camera_flip(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_flip(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args)
+{
 	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
@@ -205,8 +210,8 @@ godot_variant _camera_flip(godot_object *p_instance, void *p_method_data, void *
 }
 
 
-godot_variant _camera_detect_face(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_detect_face(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args)
+{
 	godot_variant res;
 	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
@@ -225,8 +230,8 @@ godot_variant _camera_detect_face(godot_object *p_instance, void *p_method_data,
 	return res;
 }
 
-godot_variant _camera_compute_flow(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
-
+godot_variant _camera_compute_flow(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args)
+{
 	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
 
@@ -257,17 +262,13 @@ godot_variant _camera_compute_flow(godot_object *p_instance, void *p_method_data
 
 
 /* Putting this at the end to avoid writing prototypes */
-void GDN_EXPORT godot_nativescript_init(void *p_handle) {
-
-	godot_instance_create_func create = { NULL, NULL, NULL };
-	create.create_func = &_camera_constructor;
-
-	godot_instance_destroy_func destroy = { NULL, NULL, NULL };
-	destroy.destroy_func = &_camera_destructor;
-
+void GDN_EXPORT godot_nativescript_init(void *p_handle)
+{
+	godot_instance_create_func create   = { .create_func = &_camera_constructor, NULL, NULL };
+	godot_instance_destroy_func destroy = { .destroy_func = &_camera_destructor, NULL, NULL };
 	nativescript_api->godot_nativescript_register_class(p_handle, "Camera", "Reference", create, destroy);
 
-	godot_method_attributes method_attr = { GODOT_METHOD_RPC_MODE_DISABLED };
+	/* Setting properties */
 	godot_property_attributes prop_attr = {
 		.rset_type = GODOT_METHOD_RPC_MODE_DISABLED,
 		.type = 0, // XXX
@@ -275,12 +276,6 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 		// .hint_string = ,
 		.usage = GODOT_PROPERTY_USAGE_STORAGE | GODOT_PROPERTY_USAGE_EDITOR,
 	};
-
-	godot_instance_method get_image = { .method = &_camera_get_image, NULL, NULL };
-	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "get_image", method_attr, get_image);
-
-	godot_instance_method open = { .method = &_camera_open, NULL, NULL };
-	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "open", method_attr, open);
 
 	godot_property_get_func get_width = { .get_func = &_camera_get_width, NULL, NULL };
 	godot_property_set_func set_width = { .set_func = &_camera_do_nothing, NULL, NULL };
@@ -293,6 +288,15 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle) {
 	godot_property_get_func get_size = { .get_func = &_camera_get_size, NULL, NULL };
 	godot_property_set_func set_size = { .set_func = &_camera_do_nothing, NULL, NULL };
 	nativescript_api->godot_nativescript_register_property(p_handle, "Camera", "size", &prop_attr, set_size, get_size);
+
+	/* Setting methods */
+	godot_method_attributes method_attr = { GODOT_METHOD_RPC_MODE_DISABLED };
+
+	godot_instance_method get_image = { .method = &_camera_get_image, NULL, NULL };
+	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "get_image", method_attr, get_image);
+
+	godot_instance_method open = { .method = &_camera_open, NULL, NULL };
+	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "open", method_attr, open);
 
 	godot_instance_method set_default = { .method = &_camera_set_default, NULL, NULL };
 	nativescript_api->godot_nativescript_register_method(p_handle, "Camera", "set_default", method_attr, set_default);
