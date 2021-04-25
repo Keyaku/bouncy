@@ -1,10 +1,10 @@
 extends Node
 
-var size = Vector2(640, 480);
+onready var render_size = get_tree().get_root().size
 
 onready var camera = preload("res://scripts/native/camera.gdns").new()
 
-var active = false
+var active: bool = false
 var player
 var camera_size
 var texture_size
@@ -20,12 +20,11 @@ func _ready():
 	camera.set_default(0)
 	camera.open();
 	camera.flip(true, false);
-	camera_size = Vector2(camera.get_width(), camera.get_height());
-	texture_size = max(camera_size.x, camera_size.y);
+	texture_size = max(camera.size.x, camera.size.y);
 
-	emit_signal("camera_ready", camera_size);
+	emit_signal("camera_ready", camera.size);
 
-	player = get_node("/root/main/game/player");
+	player = get_node("game/player");
 
 	$animation.play("greeting_blink");
 
@@ -41,7 +40,7 @@ func _process(_delta):
 		$face_detection.exists = face is Rect2 or face is bool and face == true
 		if face and not active:
 			var position = face.position + face.size / 2;
-			if (position - size / 2).length() < 40:
+			if (position - render_size / 2).length() < 40:
 				active = true
 				emit_signal("game_start", position, $animation)
 				$animation.play("game_start")

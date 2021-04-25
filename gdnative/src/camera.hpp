@@ -43,10 +43,11 @@ public:
 	Mat getFrame();
 	Mat getFrameIfNewer(unsigned long& current);
 	unsigned long getFrameNumber();
-	int getWidth();
-	int getHeight();
 
 	void flip(bool flip_lr = true, bool flip_ud = false);
+
+	int width;
+	int height;
 
 private:
 
@@ -54,8 +55,6 @@ private:
 
 	VideoCapture capture;
 	Mat frame;
-	int width;
-	int height;
 	unsigned long counter;
 	float fps;
 	bool flip_lr, flip_ud;

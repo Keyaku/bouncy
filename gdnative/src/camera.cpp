@@ -4,7 +4,7 @@
 #include <chrono>
 #include <map>
 
-#include "camera.h"
+#include "camera.hpp"
 
 
 Camera::Camera(int camera) : fps(30), flip_lr(false), flip_ud(false) {
@@ -66,19 +66,6 @@ Mat Camera::getFrameIfNewer(unsigned long& current) {
 	current = counter;
 
 	return frame;
-
-}
-
-int Camera::getWidth() {
-
-	return width;
-
-}
-
-
-int Camera::getHeight() {
-
-	return height;
 
 }
 
@@ -198,7 +185,7 @@ int camera_get_image(void *obj, uint8_t* buffer, unsigned long* newer) {
 		return 0;
 	}
 
-	Mat wrapper(user_data->getHeight(), user_data->getWidth(), CV_8UC3, buffer, std::max(user_data->getHeight(), user_data->getWidth()) * 3);
+	Mat wrapper(user_data->height, user_data->width, CV_8UC3, buffer, std::max(user_data->height, user_data->width) * 3);
 	cvtColor(frame, wrapper, COLOR_BGR2RGB);
 
 	return 1;
@@ -208,15 +195,14 @@ int camera_get_width(void *obj) {
 
 	SharedCamera user_data = *((SharedCamera*) obj);
 
-	return user_data->getWidth();
+	return user_data->width;
 }
-
 
 int camera_get_height(void *obj) {
 
 	SharedCamera user_data = *((SharedCamera*) obj);
 
-	return user_data->getHeight();
+	return user_data->height;
 }
 
 void camera_set_default(int id) {

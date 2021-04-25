@@ -6,8 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "bouncy.h"
-#include "camera.h"
-#include "processing.h"
+#include "camera.hpp"
+#include "processing.hpp"
 
 using namespace std;
 using namespace cv;

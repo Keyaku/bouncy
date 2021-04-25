@@ -15,10 +15,10 @@ func _integrate_forces(state):
 		state.transform = Transform2D(0, reposition)
 		reposition = null
 
-func _on_root_game_start(position):
+func _on_game_start(position):
 	reposition = position
 
-func _on_root_force(force):
+func _on_force(force):
 	apply_impulse(Vector2(), force)
 	eye.set("position", (1 - damping) * eye.get("position") + damping * force.normalized() * 3)
 
