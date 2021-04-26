@@ -135,7 +135,7 @@ godot_variant _camera_open(
 	int p_num_args, godot_variant **p_args
 ) {
 	int camera_id = -1, success;
-	int width, height, ms;
+	int width, height;
 	godot_variant res;
 
 	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
@@ -164,8 +164,7 @@ godot_variant _camera_open(
 	height = camera_get_height(user_data->camera);
 	api->godot_vector2_new(&user_data->size, width, height);
 
-	ms = (width < height) ? height : width;
-	api->godot_pool_byte_array_resize(&user_data->buffer, ms * ms * 3);
+	api->godot_pool_byte_array_resize(&user_data->buffer, width * height * 3);
 
 	b_println("Opened camera");
 
@@ -179,17 +178,14 @@ godot_variant _camera_get_image(
 	void *p_user_data,
 	int p_num_args, godot_variant **p_args
 ) {
-	int updated = 0;
-
 	godot_variant res;
 	camera_data_struct * user_data = (camera_data_struct *) p_user_data;
-	godot_pool_byte_array_write_access* writer;
 
-	writer = api->godot_pool_byte_array_write(&user_data->buffer);
+	godot_pool_byte_array_write_access* writer = api->godot_pool_byte_array_write(&user_data->buffer);
 	uint8_t* data = api->godot_pool_byte_array_write_access_ptr(writer);
-	updated = camera_get_image(user_data->camera, data, &user_data->counter);
-	api->godot_pool_byte_array_write_access_destroy(writer);
+	int updated = camera_get_image(user_data->camera, data, &user_data->counter);
 
+	api->godot_pool_byte_array_write_access_destroy(writer);
 
 	if (updated) {
 		api->godot_variant_new_pool_byte_array(&res, &user_data->buffer);
@@ -301,6 +297,7 @@ godot_variant _camera_compute_flow(
 #define create_godot_property_basic(PROP_NAME, PROP_SETTER) create_godot_property(PROP_NAME, do_nothing, NULL, NULL)
 
 #define create_godot_property_const(PROP_NAME) create_godot_property_basic(PROP_NAME, do_nothing)
+
 
 #define create_godot_method(METHOD_NAME, METHOD_DATA, FREE_FUNC) { \
 	godot_instance_method METHOD_NAME = { .method = &_camera_##METHOD_NAME, .method_data = METHOD_DATA, .free_func = FREE_FUNC }; \

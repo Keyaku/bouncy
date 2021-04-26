@@ -7,8 +7,8 @@
 #include "camera.hpp"
 
 
-Camera::Camera(int camera) : fps(30), flip_lr(false), flip_ud(false) {
-
+Camera::Camera(int camera) : fps(30), flip_lr(false), flip_ud(false)
+{
 	capture.open(camera);
 
 	if (!capture.isOpened()) {
@@ -23,42 +23,37 @@ Camera::Camera(int camera) : fps(30), flip_lr(false), flip_ud(false) {
 	std::cout << "Camera ready (" << width << "x" << height << ")" << std::endl;
 
 	worker = std::thread(&Camera::loop, this);
-
 }
 
-Camera::~Camera() {
-
+Camera::~Camera()
+{
 	{
-
 		std::cout << "Closing camera" << std::endl;
 
 		std::lock_guard<std::recursive_mutex> lock(guard);
 		capture.release();
-
 	}
 
 	worker.join();
-
 }
 
-Mat Camera::getFrame() {
-
+Mat Camera::getFrame()
+{
 	std::lock_guard<std::recursive_mutex> lock(guard);
 
 	return frame;
 }
 
 
-unsigned long Camera::getFrameNumber() {
-
+unsigned long Camera::getFrameNumber()
+{
 	std::lock_guard<std::recursive_mutex> lock(guard);
 
 	return counter;
-
 }
 
-Mat Camera::getFrameIfNewer(unsigned long& current) {
-
+Mat Camera::getFrameIfNewer(unsigned long& current)
+{
 	std::lock_guard<std::recursive_mutex> lock(guard);
 
 	if (current == counter) return Mat();
@@ -66,23 +61,20 @@ Mat Camera::getFrameIfNewer(unsigned long& current) {
 	current = counter;
 
 	return frame;
-
 }
 
-void Camera::flip(bool flip_lr, bool flip_ud) {
-
+void Camera::flip(bool flip_lr, bool flip_ud)
+{
 	this->flip_lr = flip_lr;
 	this->flip_ud = flip_ud;
 }
 
-void Camera::loop() {
-
+void Camera::loop()
+{
 	while (true) {
-
 		auto start = std::chrono::high_resolution_clock::now();
 
 		{
-
 			std::lock_guard<std::recursive_mutex> lock(guard);
 
 			capture.read(frame);
@@ -97,7 +89,6 @@ void Camera::loop() {
 			}
 
 			counter++;
-
 		}
 
 		auto end = std::chrono::high_resolution_clock::now();
@@ -107,9 +98,7 @@ void Camera::loop() {
 		auto remaining = std::chrono::milliseconds(std::max(1l, (long)((1000.0 / fps) - used)));
 
 		std::this_thread::sleep_for(remaining);
-
 	}
-
 }
 
 
@@ -117,8 +106,8 @@ static std::map<int, std::weak_ptr<Camera> > cameras;
 
 static int default_camera = 0;
 
-SharedCamera camera_open(int id) {
-
+SharedCamera camera_open(int id)
+{
 	if (id < 0) id = default_camera;
 
 	std::cout << "Query camera " << id << std::endl;
@@ -138,39 +127,32 @@ SharedCamera camera_open(int id) {
 		} catch (const std::runtime_error& e) {
 			return std::shared_ptr<Camera>();
 		}
-
 	} else {
-
 		return cameras[id].lock();
-
 	}
-
 }
 
-void camera_delete_all() {
-
+void camera_delete_all()
+{
 	cameras.clear();
-
 }
 
-void* camera_create(int id) {
-
+void* camera_create(int id)
+{
 	SharedCamera camera = camera_open(id);
 
 	return new SharedCamera(camera);
-
 }
 
-void camera_delete(void *obj) {
-
+void camera_delete(void *obj)
+{
 	if (!obj) return;
 
 	delete (SharedCamera*) obj;
-
 }
 
-int camera_get_image(void *obj, uint8_t* buffer, unsigned long* newer) {
-
+int camera_get_image(void *obj, uint8_t* buffer, unsigned long* newer)
+{
 	SharedCamera user_data = *((SharedCamera*) obj);
 
 	Mat frame;
@@ -185,36 +167,35 @@ int camera_get_image(void *obj, uint8_t* buffer, unsigned long* newer) {
 		return 0;
 	}
 
-	Mat wrapper(user_data->height, user_data->width, CV_8UC3, buffer, std::max(user_data->height, user_data->width) * 3);
+	// size_t step = std::max(user_data->height, user_data->width) * 3;
+	Mat wrapper(user_data->height, user_data->width, CV_8UC3, buffer);
 	cvtColor(frame, wrapper, COLOR_BGR2RGB);
 
 	return 1;
 }
 
-int camera_get_width(void *obj) {
-
+int camera_get_width(void *obj)
+{
 	SharedCamera user_data = *((SharedCamera*) obj);
 
 	return user_data->width;
 }
 
-int camera_get_height(void *obj) {
-
+int camera_get_height(void *obj)
+{
 	SharedCamera user_data = *((SharedCamera*) obj);
 
 	return user_data->height;
 }
 
-void camera_set_default(int id) {
+void camera_set_default(int id)
+{
 	default_camera = id;
 }
 
-void camera_flip(void *obj, int flip_lr, int flip_ud) {
-
+void camera_flip(void *obj, int flip_lr, int flip_ud)
+{
 	SharedCamera user_data = *((SharedCamera*) obj);
 
 	user_data->flip(flip_lr, flip_ud);
 }
-
-
-

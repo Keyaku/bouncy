@@ -17,5 +17,7 @@
 
 /* General helpers */
 #define array_len(ARR) (sizeof ARR / sizeof ARR[0])
+#define max(a, b) (a < b) ? b : a
+#define min(a, b) (a > b) ? b : a
 
 #endif
