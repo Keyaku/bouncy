@@ -24,6 +24,7 @@ GAME="*res://scripts/GLOBAL.gd"
 
 [debug]
 
+gdscript/warnings/unused_signal=false
 gdscript/warnings/unsafe_cast=true
 gdscript/warnings/unsafe_call_argument=true
 

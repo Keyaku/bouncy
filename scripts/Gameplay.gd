@@ -2,7 +2,7 @@ extends Node
 
 
 onready var cv_camera = preload("res://scripts/native/camera.gdns").new()
-onready var player = get_node("game/player")
+onready var player = $game/player
 
 var active: bool = false
 var image = Image.new()
@@ -13,12 +13,13 @@ signal game_start
 signal force
 
 func _ready():
+	# Preparing camera display
 	cv_camera.set_default(0)
 	cv_camera.open()
 	cv_camera.flip(true, false)
 
+	# Start
 	emit_signal("camera_ready", cv_camera)
-
 	$animation.play("greeting_blink")
 
 func _process(_delta):
@@ -30,7 +31,11 @@ func _process(_delta):
 
 	if not active:
 		var face = cv_camera.detect_face()
-		$face_detection.exists = face is Rect2 or face is bool and face == true
+
+		# Update detection value in each indicator
+		for child in $Detection.get_children():
+			child.emit_signal("detection_update", face is Rect2)
+
 		if face and not active:
 			var position = face.position + face.size / 2
 			if (position - GAME.root.size / 2).length() < 40:

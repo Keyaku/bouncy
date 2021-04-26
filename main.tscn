@@ -5,6 +5,7 @@
 [ext_resource path="res://scripts/Shadow.gd" type="Script" id=3]
 [ext_resource path="res://scenes/wall.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scripts/Detection.gd" type="Script" id=6]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -90,24 +91,11 @@ tracks/1/keys = {
 "values": [ Color( 0.517647, 0.0745098, 0.0745098, 1 ), Color( 0.376471, 0.376471, 0.376471, 1 ), Color( 0.517647, 0.0745098, 0.0745098, 1 ) ]
 }
 
-[sub_resource type="GDScript" id=8]
-script/source = "extends CanvasItem
-
-var exists: bool = false setget _set_exists
-
-func _ready():
-	pass
-
-func _set_exists(val):
-	exists = val
-	update()
-
-func _draw():
-	draw_circle(Vector2(0, 0), 5, Color.green if exists else Color.red)
-"
-
-[node name="main" type="Node2D"]
+[node name="main" type="Control"]
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="environment" type="WorldEnvironment" parent="."]
 environment = SubResource( 1 )
@@ -188,11 +176,26 @@ polygon = PoolVector2Array( -60, -60, 60, -60, 60, 60, -60, 60 )
 anims/game_start = SubResource( 6 )
 anims/greeting_blink = SubResource( 7 )
 
-[node name="face_detection" type="Node2D" parent="."]
-position = Vector2( 625.593, 462.973 )
-script = SubResource( 8 )
+[node name="Detection" type="Control" parent="."]
+margin_left = 410.105
+margin_top = 408.147
+margin_right = 547.105
+margin_bottom = 448.147
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="face" type="Control" parent="Detection"]
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+text = "Face"
 
 [connection signal="camera_ready" from="." to="display" method="_on_main_camera_ready"]
 [connection signal="force" from="." to="game/player" method="_on_force"]
-[connection signal="game_start" from="." to="game/player" method="_on_game_start"]
 [connection signal="game_start" from="." to="shadow" method="_on_game_start"]
+[connection signal="game_start" from="." to="game/player" method="_on_game_start"]
