@@ -46,4 +46,3 @@ func _process(_delta):
 		var region = Rect2(player.get("position"), Vector2(70, 70))
 		var force = cv_camera.compute_flow(region)
 		emit_signal("force", Vector2(clamp(force.x, -100, 100), clamp(force.y, -100, 100)))
-

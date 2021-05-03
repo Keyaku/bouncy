@@ -92,6 +92,8 @@ tracks/1/keys = {
 }
 
 [node name="main" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -112,7 +114,12 @@ scale = Vector2( 4.36585, 669.43 )
 texture = SubResource( 3 )
 script = ExtResource( 3 )
 
-[node name="game" type="Node2D" parent="."]
+[node name="game" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="obstacles" type="Node2D" parent="game"]
 modulate = Color( 1, 1, 1, 0 )
@@ -150,17 +157,24 @@ scale = Vector2( 4.32, 4.6 )
 
 [node name="player" parent="game" instance=ExtResource( 5 )]
 
-[node name="greeting" type="Node2D" parent="game"]
+[node name="greeting" type="Control" parent="game"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="game/greeting"]
-margin_left = -21.1647
-margin_top = 81.3666
-margin_right = 520.835
-margin_bottom = 169.367
-rect_scale = Vector2( 1.26726, 1.26726 )
+anchor_right = 1.0
+margin_top = 81.0
+margin_bottom = 95.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_colors/font_color = Color( 0.774305, 0.150464, 0.150464, 1 )
 text = "Place your head in rectangle to start the game"
 align = 1
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

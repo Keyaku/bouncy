@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <map>
 
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/video/video.hpp>
@@ -13,33 +14,37 @@ using namespace std;
 using namespace cv;
 
 #define MAX_COUNT 500
+#define CASCADE_DIR "gdnative/bouncy/cascades/"
 
-static CascadeClassifier cascade;
-static const char* CascadeDir = "gdnative/bouncy/face_cascade.xml";
+static map<string, CascadeClassifier> CascadeList {
+	{ "face", CascadeClassifier() },
+};
 
 static Mat camera, working1, working2;
-
 static Mat previous;
 
-int processing_initialize() {
+int processing_initialize()
+{
+	for (auto const& it: CascadeList) {
+		string name = it.first;
 
-	if (!cascade.load(CascadeDir)) {
-		b_fprintln(stderr, "Cannot load %s", CascadeDir);
+		if (!CascadeList[name].load(CASCADE_DIR + name + ".xml")) {
+			b_fprintln(stderr, "Cannot load \"%s\" cascade file", name.c_str());
+		}
 	}
 
 	return 1;
 }
 
-region processing_detect_face(void *obj) {
-
+region processing_detect_face(void *obj)
+{
 	SharedCamera user_data = *((SharedCamera*) obj);
+	CascadeClassifier cascade = CascadeList["face"];
 
 	camera = user_data->getFrame();
-
 	cvtColor(camera, working1, COLOR_RGB2GRAY);
 
 	vector<Rect> faces;
-
 	region r; r.x = -1; // default value in case something goes wrong
 
 	if (!cascade.empty()) {
@@ -65,8 +70,8 @@ region processing_detect_face(void *obj) {
 	return r;
 }
 
-flow processing_calculate_flow(void *obj, region r) {
-
+flow processing_calculate_flow(void *obj, region r)
+{
 	flow f; f.x = 0; f.y = 0;
 
 	SharedCamera user_data = *((SharedCamera*) obj);
@@ -116,7 +121,3 @@ flow processing_calculate_flow(void *obj, region r) {
 	return f;
 
 }
-
-
-
-
