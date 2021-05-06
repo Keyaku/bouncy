@@ -1,5 +1,5 @@
-#ifndef BOUNCY_API_H
-#define BOUNCY_API_H
+#ifndef BOUNCY_C_API_H
+#define BOUNCY_C_API_H
 
 #include <string.h>
 

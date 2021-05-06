@@ -232,7 +232,31 @@ godot_variant _camera_detect_face(
 	godot_variant res;
 	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
-	region r = processing_detect_face(user_data->camera);
+	region r = processing_detect_object(user_data->camera, "face");
+
+	if (r.x < 0) {
+		api->godot_variant_new_bool(&res, GODOT_FALSE);
+		return res;
+	}
+
+	godot_rect2 grec;
+	api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
+
+	api->godot_variant_new_rect2(&res, &grec);
+
+	return res;
+}
+
+godot_variant _camera_detect_hand(
+	godot_object *p_instance,
+	void *p_method_data,
+	void *p_user_data,
+	int p_num_args, godot_variant **p_args
+) {
+	godot_variant res;
+	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
+
+	region r = processing_detect_object(user_data->camera, "hand");
 
 	if (r.x < 0) {
 		api->godot_variant_new_bool(&res, GODOT_FALSE);
@@ -319,7 +343,7 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle)
 		.rset_type = GODOT_METHOD_RPC_MODE_DISABLED,
 		.type = 0, // XXX
 		.hint = GODOT_PROPERTY_HINT_NONE,
-		// .hint_string = ,
+		// XXX: .hint_string = ,
 		.usage = GODOT_PROPERTY_USAGE_STORAGE | GODOT_PROPERTY_USAGE_EDITOR,
 	};
 
@@ -335,6 +359,7 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle)
 	create_godot_method_basic(set_default);
 	create_godot_method_basic(flip);
 	create_godot_method_basic(detect_face);
+	create_godot_method_basic(detect_hand);
 	create_godot_method_basic(compute_flow);
 
 	/* Initializing process */

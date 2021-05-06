@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <filesystem>
 #include <map>
 
 #include <opencv2/objdetect/objdetect.hpp>
@@ -7,28 +8,36 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "bouncy.h"
+#include "bouncy.hpp"
 #include "camera.hpp"
 #include "processing.hpp"
 
 using namespace std;
 using namespace cv;
+namespace fs = std::filesystem;
 
 #define MAX_COUNT 500
 #define CASCADE_DIR "gdnative/bouncy/cascades/"
 
-static map<string, CascadeClassifier> CascadeList {
-	{ "face", CascadeClassifier() },
-};
+/* Map of CascadeClassifiers; allows easier access and better organization */
+static map<string, CascadeClassifier> CascadeList;
 
 static Mat camera, working1, working2;
 static Mat previous;
 
+
 int processing_initialize()
 {
-	for (auto const& it: CascadeList) {
-		string name = it.first;
+	/* List cascade directory */
+	for (const auto & entry : fs::directory_iterator(CASCADE_DIR)) {
+		string name = get_filename(entry.path());
+		CascadeList[name] = CascadeClassifier();
 
-		if (!CascadeList[name].load(CASCADE_DIR + name + ".xml")) {
+		if (!entry.is_regular_file()) { continue; }
+		else if (get_extension(entry.path()) != "xml") { continue; }
+
+		/* Loading file */
+		if (!CascadeList[name].load(entry.path())) {
 			b_fprintln(stderr, "Cannot load \"%s\" cascade file", name.c_str());
 		}
 	}
@@ -36,15 +45,16 @@ int processing_initialize()
 	return 1;
 }
 
-region processing_detect_face(void *obj)
+/* Object detection */
+region processing_detect_object(void *arg, const char *name)
 {
-	SharedCamera user_data = *((SharedCamera*) obj);
-	CascadeClassifier cascade = CascadeList["face"];
+	SharedCamera user_data = *((SharedCamera*) arg);
+	CascadeClassifier cascade = CascadeList[name];
 
 	camera = user_data->getFrame();
 	cvtColor(camera, working1, COLOR_RGB2GRAY);
 
-	vector<Rect> faces;
+	vector<Rect> objects;
 	region r; r.x = -1; // default value in case something goes wrong
 
 	if (!cascade.empty()) {
@@ -52,24 +62,25 @@ region processing_detect_face(void *obj)
 
 		resize(working1, working2, Size(320, (int)((float)working1.rows / scale_factor)));
 
-		cascade.detectMultiScale(working2, faces,
+		cascade.detectMultiScale(working2, objects,
 			1.1, 3, CASCADE_FIND_BIGGEST_OBJECT | CASCADE_DO_ROUGH_SEARCH | CASCADE_SCALE_IMAGE,
 			Size(40, 40), Size(100, 100)
 		);
 
-		// b_println("Faces %lu %d", faces.size(), working2.cols);
+		// b_println("Faces %lu %d", objects.size(), working2.cols);
 
-		if (faces.size() > 0) {
-			r.x = faces[0].x * scale_factor;
-			r.y = faces[0].y * scale_factor;
-			r.w = faces[0].width * scale_factor;
-			r.h = faces[0].height * scale_factor;
+		if (objects.size() > 0) {
+			r.x = objects[0].x * scale_factor;
+			r.y = objects[0].y * scale_factor;
+			r.w = objects[0].width * scale_factor;
+			r.h = objects[0].height * scale_factor;
 		}
 	}
 
 	return r;
 }
 
+/* General */
 flow processing_calculate_flow(void *obj, region r)
 {
 	flow f; f.x = 0; f.y = 0;

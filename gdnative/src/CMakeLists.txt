@@ -5,7 +5,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bouncy/")
 set(GODOT_HEADERS "${CMAKE_SOURCE_DIR}/godot-headers")
 set(GODOT_HEADERS_ZIP "${CMAKE_SOURCE_DIR}/godot-headers.zip")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -fPIC")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -g -shared")
 
@@ -36,4 +36,3 @@ if(RES_LEN EQUAL 0)
 endif()
 
 include_directories(${CMAKE_BINARY_DIR}/godot-headers)
-

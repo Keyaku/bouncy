@@ -207,7 +207,16 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-text = "Face"
+
+[node name="hand" type="Control" parent="Detection"]
+margin_left = -1.39526
+margin_top = 34.8818
+margin_right = -1.39526
+margin_bottom = 34.8818
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="camera_ready" from="." to="display" method="_on_main_camera_ready"]
 [connection signal="force" from="." to="game/player" method="_on_force"]

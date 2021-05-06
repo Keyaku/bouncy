@@ -18,7 +18,7 @@ typedef struct flow {
 
 int processing_initialize();
 
-region processing_detect_face(void *obj);
+region processing_detect_object(void *obj, const char*);
 flow processing_calculate_flow(void *obj, region r);
 
 #ifdef __cplusplus
