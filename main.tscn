@@ -220,5 +220,5 @@ __meta__ = {
 
 [connection signal="camera_ready" from="." to="display" method="_on_main_camera_ready"]
 [connection signal="force" from="." to="game/player" method="_on_force"]
-[connection signal="game_start" from="." to="shadow" method="_on_game_start"]
 [connection signal="game_start" from="." to="game/player" method="_on_game_start"]
+[connection signal="game_start" from="." to="shadow" method="_on_game_start"]

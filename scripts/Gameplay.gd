@@ -31,8 +31,8 @@ func _process(_delta):
 
 	if not active:
 		var objects = {
-			"face": cv_camera.detect_face(),
-			"hand": cv_camera.detect_hand(),
+			"face": cv_camera.detect("face"),
+			"hand": cv_camera.detect("hand"),
 		}
 		var face = objects["face"]
 

@@ -1,7 +1,8 @@
-#include <gdnative_api_struct.gen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <gdnative_api_struct.gen.h>
 
 #include "bouncy.h"
 #include "camera.hpp"
@@ -223,52 +224,59 @@ godot_variant _camera_flip(
 }
 
 
-godot_variant _camera_detect_face(
+godot_variant _camera_detect(
 	godot_object *p_instance,
 	void *p_method_data,
 	void *p_user_data,
 	int p_num_args, godot_variant **p_args
 ) {
-	godot_variant res;
+	godot_variant retval;
 	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
 
-	region r = processing_detect_object(user_data->camera, "face");
+	/* Set default return value */
+	api->godot_variant_new_bool(&retval, GODOT_FALSE);
 
-	if (r.x < 0) {
-		api->godot_variant_new_bool(&res, GODOT_FALSE);
-		return res;
+	/* In any other case, return value is an array of the size == p_num_args */
+	godot_array g_arr;
+	if (p_num_args > 1) {
+		api->godot_array_new(&g_arr);
 	}
 
-	godot_rect2 grec;
-	api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
+	/* iterate over all arguments */
+	for (int idx = 0; idx < p_num_args; idx++) {
+		/* process the argument if it's a string; print error otherwise */
+		if (api->godot_variant_get_type(p_args[idx]) != GODOT_VARIANT_TYPE_STRING) {
+			api->godot_print_warning("Invalid argument", "detect", __FILENAME__, __LINE__);
+			continue;
+		}
+		godot_string g_str = api->godot_variant_as_string(p_args[idx]);
+		godot_char_string gc_str = api->godot_string_utf8(&g_str);
 
-	api->godot_variant_new_rect2(&res, &grec);
+		/* Return single rect if single argument, array of rects if multiple */
+		region r = processing_detect_object(user_data->camera, api->godot_char_string_get_data(&gc_str));
 
-	return res;
-}
+		/* in case region is invalid, give false */
+		if (r.x < 0) {
+			api->godot_variant_new_bool(&retval, GODOT_FALSE);
+		}
+		else {
+			godot_rect2 grec;
+			api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
+			api->godot_variant_new_rect2(&retval, &grec);
+		}
 
-godot_variant _camera_detect_hand(
-	godot_object *p_instance,
-	void *p_method_data,
-	void *p_user_data,
-	int p_num_args, godot_variant **p_args
-) {
-	godot_variant res;
-	camera_data_struct *user_data = (camera_data_struct*) p_user_data;
+		/* if only 1 argument, return a single rect2 */
+		if (p_num_args == 1) {
+			return retval;
+		}
 
-	region r = processing_detect_object(user_data->camera, "hand");
-
-	if (r.x < 0) {
-		api->godot_variant_new_bool(&res, GODOT_FALSE);
-		return res;
+		api->godot_array_append(&g_arr, &retval);
 	}
 
-	godot_rect2 grec;
-	api->godot_rect2_new(&grec, r.x, r.y, r.w, r.h);
+	api->godot_variant_new_array(&retval, &g_arr);
+	api->godot_array_destroy(&g_arr);
 
-	api->godot_variant_new_rect2(&res, &grec);
-
-	return res;
+	return retval;
 }
 
 godot_variant _camera_compute_flow(
@@ -358,8 +366,7 @@ void GDN_EXPORT godot_nativescript_init(void *p_handle)
 	create_godot_method_basic(open);
 	create_godot_method_basic(set_default);
 	create_godot_method_basic(flip);
-	create_godot_method_basic(detect_face);
-	create_godot_method_basic(detect_hand);
+	create_godot_method_basic(detect);
 	create_godot_method_basic(compute_flow);
 
 	/* Initializing process */

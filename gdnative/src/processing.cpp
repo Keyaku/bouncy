@@ -67,8 +67,7 @@ region processing_detect_object(void *arg, const char *name)
 			Size(40, 40), Size(100, 100)
 		);
 
-		// b_println("Faces %lu %d", objects.size(), working2.cols);
-
+		/* FIXME: Only detects ONE instance of an object */
 		if (objects.size() > 0) {
 			r.x = objects[0].x * scale_factor;
 			r.y = objects[0].y * scale_factor;
