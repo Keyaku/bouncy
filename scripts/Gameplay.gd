@@ -30,10 +30,7 @@ func _process(_delta):
 	$display.set_frame(image)
 
 	if not active:
-		var objects = {
-			"face": cv_camera.detect("face"),
-			"hand": cv_camera.detect("hand"),
-		}
+		var objects = cv_camera.detect("face", "hand")
 		var face = objects["face"]
 
 		# Update detection value in each indicator

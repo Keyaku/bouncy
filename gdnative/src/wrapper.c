@@ -236,15 +236,15 @@ godot_variant _camera_detect(
 	/* Set default return value */
 	api->godot_variant_new_bool(&retval, GODOT_FALSE);
 
-	/* In any other case, return value is an array of the size == p_num_args */
-	godot_array g_arr;
+	/* In any other case, return value is a dictionary of size == p_num_args */
+	godot_dictionary g_dict;
 	if (p_num_args > 1) {
-		api->godot_array_new(&g_arr);
+		g_dict = api->godot_variant_as_dictionary(p_args[0]);
 	}
 
 	/* iterate over all arguments */
 	for (int idx = 0; idx < p_num_args; idx++) {
-		/* process the argument if it's a string; print error otherwise */
+		/* process the argument if it's a string; print warning otherwise */
 		if (api->godot_variant_get_type(p_args[idx]) != GODOT_VARIANT_TYPE_STRING) {
 			api->godot_print_warning("Invalid argument", "detect", __FILENAME__, __LINE__);
 			continue;
@@ -252,7 +252,7 @@ godot_variant _camera_detect(
 		godot_string g_str = api->godot_variant_as_string(p_args[idx]);
 		godot_char_string gc_str = api->godot_string_utf8(&g_str);
 
-		/* Return single rect if single argument, array of rects if multiple */
+		/* get region of the detected object */
 		region r = processing_detect_object(user_data->camera, api->godot_char_string_get_data(&gc_str));
 
 		/* in case region is invalid, give false */
@@ -270,11 +270,9 @@ godot_variant _camera_detect(
 			return retval;
 		}
 
-		api->godot_array_append(&g_arr, &retval);
+		api->godot_dictionary_set(&g_dict, p_args[idx], &retval);
 	}
-
-	api->godot_variant_new_array(&retval, &g_arr);
-	api->godot_array_destroy(&g_arr);
+	api->godot_variant_new_dictionary(&retval, &g_dict);
 
 	return retval;
 }
